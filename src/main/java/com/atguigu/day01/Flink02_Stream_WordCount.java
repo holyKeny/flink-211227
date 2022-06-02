@@ -25,7 +25,7 @@ public class Flink02_Stream_WordCount {
         env.setParallelism(1);
 
         //2.从文件读取数据
-        DataStreamSource<String> streamSource = env.readTextFile("hdfs://hadoop102:8020/input");
+        DataStreamSource<String> streamSource = env.readTextFile("input/words.txt");
 
         /**
          * 首先flatMap ,按照空格切分,然后将单词转换成Tuple2元组(word,1)

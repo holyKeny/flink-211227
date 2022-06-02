@@ -6,6 +6,7 @@ import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.co.CoMapFunction;
+import org.apache.flink.streaming.api.functions.co.RichCoMapFunction;
 
 /**
  * @author lx
@@ -16,7 +17,7 @@ public class Flink_Transform_Connect {
         //1.获取流执行环境
         StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(new Configuration());
 
-        env.setParallelism(1);
+        env.setParallelism(2);
 
         //2.从端口获取数据
         DataStreamSource<String> streamSource1 = env.socketTextStream("hadoop102", 9999);
@@ -27,16 +28,17 @@ public class Flink_Transform_Connect {
 
 
         //4.对合并后的流做map
-        SingleOutputStreamOperator<String> map = connect.map(new CoMapFunction<String, String, String>() {
+        SingleOutputStreamOperator<String> map = connect.map(new RichCoMapFunction<String, String, String>() {
             @Override
             public String map1(String value) throws Exception {
-                return value + "map1";
+                System.out.println(getRuntimeContext().getTaskNameWithSubtasks());
+                return "map1 : "+value;
             }
 
             @Override
             public String map2(String value) throws Exception {
-
-                return value + "map2";
+                System.out.println(getRuntimeContext().getTaskNameWithSubtasks());
+                return "map2 : "+value;
             }
         });
 

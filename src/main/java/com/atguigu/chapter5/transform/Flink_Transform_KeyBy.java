@@ -21,6 +21,9 @@ public class Flink_Transform_KeyBy {
 
         SingleOutputStreamOperator<String> map = streamSource.map(r -> r).setParallelism(2);
 
+        //将map和print并行度都设置为2,组合成一个Task,将Task中2个分区的数据发往KeyBy后的4个分区内
+        map.print("原始分区:").setParallelism(2);
+
         //使用KeyBy对相同Key的数据进行分组聚合
         KeyedStream<String, String> keyBy = map.keyBy(new KeySelector<String, String>() {
             @Override
@@ -29,8 +32,6 @@ public class Flink_Transform_KeyBy {
             }
         });
 
-        //将map和print并行度都设置为2,组合成一个Task,将Task中2个分区的数据发往KeyBy后的4个分区内
-        map.print("原始分区:").setParallelism(2);
 
         //打印keyBy的结果
         keyBy.print();
